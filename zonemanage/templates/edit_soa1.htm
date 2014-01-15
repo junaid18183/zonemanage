@@ -1,0 +1,15 @@
+{% extends "base.htm" %}
+
+{% block pageheader %}
+Editing SOA Details for {{ zone_name }} 
+{% endblock pageheader %}
+
+{% block body %}
+<form action="/savesoa/{{zone_name }}/" method="post">{% csrf_token %}
+{% comment %}
+{{ form.as_p }}
+{% endcomment %}
+{{ form.as_table }}
+<input type="submit" value="Submit" />
+</form>
+{% endblock body %}

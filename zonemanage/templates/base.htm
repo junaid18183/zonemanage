@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+{% block header %}
+<head>
+  <title>DNS Admin</title>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" />
+  <script src="{{ STATIC_URL }}sorttable.js"></script>
+</head>
+{% endblock header %}
+
+<body>
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="{{ STATIC_URL }}bootstrap/js/bootstrap.min.js"></script>
+
+<div class="container-fluid">
+<div class="row-fluid">
+  <div class="span2">
+    {% block navigation %}
+    <ul class="nav nav-list">
+      <li class="nav-header">Actions</li>
+      <li><a href="/">Home<b></li>
+      <li><a href="/zone_list/">Zone List</li>
+      <li><a href="/history/">Change History Zone</li>
+    </ul>
+    {% endblock navigation %}
+  </div>
+
+  <div class="span10">
+      <div class="navbar">
+        <div class="navbar-inner">
+          <a class="brand" href="#">
+            {% block pageheader %}
+            {% endblock pageheader %}
+          </a>
+        </div>
+      </div>
+
+     {% block errors %}
+       {% if errors %}
+         <div class="alert alert-error">
+           Errors were encountered:
+           <br>
+          {{ errors }}
+        </div>
+      {% endif %}
+    {% endblock errors %}
+
+    {% block body %}
+    {% endblock body %}
+  </div>
+</div>
+</div>
+</body>
+
+{% block footer %}
+{% endblock footer %}
+</html>

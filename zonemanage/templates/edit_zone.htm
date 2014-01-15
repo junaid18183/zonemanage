@@ -1,0 +1,43 @@
+{% extends "base.htm" %}
+
+{% block pageheader %}
+Editing Zone Details for {{ zone_name }} 
+{% endblock pageheader %}
+
+{% block body %}
+<table id="zoneform_zones", border=1>
+    <thead><tr>
+        <th>
+            <span class="fieldlabel">Hostname</span>
+        </th><th>
+            <span class="fieldlabel">Type</span>
+        </th><th>
+            <span class="fieldlabel">Value</span>
+        </th>
+    </tr></thead>
+    <tbody>
+    <tr class="expandingform" id="zoneform_zones_0">
+	{% for record in zone_data.zones %}
+    	<tr><td>
+	 <span><input name={{record.hostname }}  type="text" class="textfield" value={{ record.hostname }} size="30"></span>
+	</td>
+	<td><select name="type"> 
+	 {% for type in types %}
+	 {% ifequal type record.type %}
+	  <option value="{{record.type}}" selected="selected">{{record.type}}</option>
+	 {% else %}
+	 <option value={{ type }}>{{ type }}</option>
+	  {% endifequal %}
+	 {% endfor %}
+	</select>
+	</td> 
+	<td>
+	<span><input name={{record.value }}  type="text" class="textfield" value={{ record.value }} size="30"></span>
+	</td> </tr>
+	{% endfor %}
+      </table>
+            <input style="margin-top:1em;" name="cancel" type="submit" class="submitbutton" value="Cancel" id="zoneform_cancel">
+        <div><input type="submit" class="submitbutton" value="Save"></div>
+</form></p>
+  </div>
+{% endblock body %}
