@@ -5,3 +5,8 @@ Work in progress
 ==How to start==
  python manage.py runserver 0.0.0.0:8888
 
+==Dependacies==
+Requires django (>1.6.4)
+Check the version using 
+python -c "import django; print(django.get_version())"
+
