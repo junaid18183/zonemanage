@@ -10,3 +10,6 @@ Requires django (>1.6.4)
 Check the version using 
 python -c "import django; print(django.get_version())"
 
+==Setting==
+Chnage the values in zonemanage/config.py
+

@@ -3,10 +3,11 @@
 {% block pageheader %}
 Home
 {% endblock pageheader %}
-
-
 {% block body %}
-This is zonemanage.
-
-{{data}}
+{% for d in data %}
+{{d}}<p>
+{% endfor %}
+{% if URL %}
+<a href={{A}}> {{URL}}<a>
+{% endif %}
 {% endblock body %}
