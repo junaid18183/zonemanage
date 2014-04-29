@@ -237,7 +237,7 @@ def savesoa(zone,soa_fields):
 	    if soa.serial == soa_fields['serial']:
 	        auto_inc_serial = True
 	    else:
-	        auto_inc_serial = False
+	        auto_inc_serial = True ##Changed 29042014
 	        soa.serial = soa_fields['serial']
 
 	    archive_file = archive_zone(z)
