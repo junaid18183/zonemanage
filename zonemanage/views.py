@@ -55,18 +55,20 @@ def edit_zone1(request,zonename):
 	z=get_zone(zonename)
 	hostnames = sorted_hostnames(zonename, z.names.keys())
 	zone_data=dns_records(z,hostnames)
-	type=SUPPORTED_RECORD_TYPES
+	types=SUPPORTED_RECORD_TYPES
+	
 
     	if request.method == 'POST': # If the form has been submitted...
+	        email_formset = email_formset(request.POST)
         	form = RecordsForm(request.POST) # A form bound to the POST data
-	        if form.is_valid(): # All validation rules pass
+	        if form.is_valid() and email_formset.is_valid(): 
 	            # Process the data in form.cleaned_data
 	            # ...
 	            return HttpResponseRedirect('/') # Redirect after POST
 	else:
-	        form = RecordsForm(initial=zone_data) # An unbound form
+		formset = RecordsFormSet(initial=zone_data['zones'])
 
-	return render(request, "edit_zone1.htm", { "zone_name" : zonename,"form" : form })
+	return render(request, "edit_zone1.htm", { "zone_name" : zonename,"form" : formset })
 
 
 def save_zone(request,zonename):

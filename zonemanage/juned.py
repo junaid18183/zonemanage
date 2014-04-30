@@ -14,5 +14,14 @@ zonefile='/var/named/chroot/var/named/glam.colo'
 
 #status=savesoa('1.143.10.in-addr.arpa',soa_fields)
 
-status=reload('1.143.10.in-addr.arpa')
-print status
+#status=reload('1.143.10.in-addr.arpa')
+#print status
+
+
+z=get_zone(zonename)
+hostnames = sorted_hostnames(zonename, z.names.keys())
+zone_data=dns_records(z,hostnames)
+types=SUPPORTED_RECORD_TYPES
+
+
+print zone_data['zones']
