@@ -18,10 +18,8 @@ zonefile='/var/named/chroot/var/named/glam.colo'
 #print status
 
 
-z=get_zone(zonename)
-hostnames = sorted_hostnames(zonename, z.names.keys())
-zone_data=dns_records(z,hostnames)
-types=SUPPORTED_RECORD_TYPES
-
-
-print zone_data['zones']
+#z=get_zone(zonename)
+#hostnames = sorted_hostnames(zonename, z.names.keys())
+#zone_data=dns_records(z,hostnames)
+#types=SUPPORTED_RECORD_TYPES
+#print zone_data['zones']

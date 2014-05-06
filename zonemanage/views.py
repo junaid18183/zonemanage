@@ -55,19 +55,19 @@ def edit_zone(request,zonename):
 	hostnames = sorted_hostnames(zonename, z.names.keys())
 	zone_data=dns_records(z,hostnames)
 	types=SUPPORTED_RECORD_TYPES
-	
+	data={}	
 	RecordsFormSet = formset_factory(RecordsForm, extra=0)
 	
     	if request.method == 'POST': # If the form has been submitted...
         	formset = RecordsFormSet(request.POST) # A form bound to the POST data
 	        if formset.is_valid(): 
-			for form in formset.forms:
+			for form in formset:
 				if form.is_valid():
-					print ""
-			msg=[zonename + " saved Successfully. However you need to reload the RNDC to make it effective."]
-                        A='/zonemanage/reloadzone/'+zonename
-                        URL='Reload Zone'
-        		return render(request, "index.htm" , {"data" : msg , 'URL' : URL ,'A' : A } )
+					data.update(form.cleaned_data)
+				else:
+					data.update({'juned':'memnon'})
+			#data1=savezone(zonename,data)
+			return render(request, "index.htm" , {"data" : data } )
 		else:
         		#return HttpResponse("Error")
 			data=[formset.errors]

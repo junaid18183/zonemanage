@@ -303,65 +303,54 @@ def editzone(zone):
 
 
 #---------------------------------------------------------------------------------------------------------------
-def savezone(self, zone=None, zones=None, cancel=None):
+def savezone(zone,zones ):
+	z = get_zone(zone)
+	save_ok = True
+	auto_inc_serial = False
+	msg=[zones]
+	return msg	
+	# remove existing nodes
+	names = z.names.keys()
+	names.remove(z.domain)  # remove '@' (root)
+	for name in names:
+		z.delete_name(name)
+		# delete nodes from '@' but don't remove it completely (otherwise SOA is gone...)
+		root = z.root
+	   	root.clear_all_records(exclude='SOA')
 
-	    # DEBUG:
-	    # print "zone:",zone
-	    # from pprint import pformat
-	    # print "zones:",pformat(zones)
-
-	    z = get_zone(zone)
-
-	    if cancel:
-	        flash( _(u'Changes cancelled.'), FLASH_WARNING )
-	        redirect("/zone/manage?zone=%s" % z.domain)
-
-	    save_ok = True
-	    auto_inc_serial = False
-
-	    # remove existing nodes
-	    names = z.names.keys()
-	    names.remove(z.domain)  # remove '@' (root)
-	    for name in names:
-	        z.delete_name(name)
-	    # delete nodes from '@' but don't remove it completely (otherwise SOA is gone...)
-	    root = z.root
-	    root.clear_all_records(exclude='SOA')
-
-	    # replace with values submitted from form
-	    for record in zones:
-	        hostname = record['hostname']
+	# replace with values submitted from form
+	for record in zones:
+		hostname = record['hostname']
 	        rtype = record['type']
 	        preference = record['preference']
 	        value = record['value']
 
-	        if hostname and value and rtype in SUPPORTED_RECORD_TYPES:
-	            if hostname not in z.names.keys():
-	                z.add_name(hostname)
-	            name = z.names[hostname]
-	            if rtype == 'MX':
-	                name.records(rtype, create=True).add( (int(preference), str(value)) )
-	            else:
-	                name.records(rtype, create=True).add(str(value))
+	        if hostname and value and rtype :
+	        #if hostname and value and rtype in SUPPORTED_RECORD_TYPES:
+		        if hostname not in z.names.keys():
+	        	        z.add_name(hostname)
+	            		name = z.names[hostname]
+	            		if rtype == 'MX':
+	                		name.records(rtype, create=True).add( (int(preference), str(value)) )
+	            		else:
+	                		name.records(rtype, create=True).add(str(value))
 	                
 	        else:
-	            # TODO: re-display form with errors ?
-	            save_ok = False
-	            # flash('Some of the records were invalid', FLASH_ALERT)
-	            # return self.editzone(zone=zone)
+	        	save_ok = False
+			msg=["Save_Ok failed"]
 
-	    if save_ok:
-	        archive_file = archive_zone(z)
+	if save_ok:
+		archive_file = archive_zone(z)
 	        archive_serial = z.root.soa.serial
 	        auto_inc_serial = True
 	        z.save(autoserial=auto_inc_serial)
 	        if not check_zone(z.domain, z.filename):
-	            flash( _(u"Zone was saved but failed syntax check. Please examine file: %s" %z.filename), FLASH_ALERT )
+	        	msg=["Zone was saved but failed syntax check. Please examine file: %s" %z.filename]
 	        else:
-	            flash( _(u"Zone %s has been saved. Don't forget to signal named to reload the zone.") % z.domain, FLASH_INFO )
-	            audit_change(CHANGE_TYPE_SAVE, z.domain, archive_file, archive_serial, identity.current.user.user_id)
+	            	msg=["Zone %s has been saved. Don't forget to signal named to reload the zone." % z.domain]
+	            	#audit_change(CHANGE_TYPE_SAVE, z.domain, archive_file, archive_serial, identity.current.user.user_id)
+	return msg	
 
-	    redirect("/zone/manage?zone=%s&auto_inc_serial=%s" % (z.domain, int(auto_inc_serial)))
 #---------------------------------------------------------------------------------------------------------------
 def soa_detail(z):
 	soa = z.root.soa
