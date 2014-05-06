@@ -1,0 +1,19 @@
+{% extends "base.htm" %}
+
+{% block pageheader %}
+Details for {{ zone_name }} 
+{% endblock pageheader %}
+
+{% block body %}
+<form action="/zonemanage/editzone/{{zone_name }}/" method="post">{% csrf_token %}
+{{ formset.management_form }}
+<table>
+	<tr><th>Hostname</th><th>Type</th><th>Value</th><th>Preference</th></tr>
+        {% for form in formset %}
+	<tr>
+        <td>{{ form.hostname }}</td><td>{{ form.type }}</td><td>{{ form.value }}</td><td>{{ form.preference }}</td>
+	</tr>
+        {% endfor %}
+    </table>
+</form>
+{% endblock body %}
