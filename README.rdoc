@@ -13,3 +13,20 @@ python -c "import django; print(django.get_version())"
 ==Setting==
 Chnage the values in zonemanage/config.py
 
+
+==Apache WSGI setting==
+Copy the zonemanage.conf into the /etc/httpd/conf.d/zonemanage.conf
+if running in apache wsgi mode make sure /var/tmp/zonemanage_archive/ (or archive direcotry is owned by apache user)
+
+==WARNING==
+Due to the nature of Zonemanage, your Apache user will need to have
+higher permission levels than normal for a public webserver. It is HIGHLY
+RECOMMENDED to keep Zonemanage on a non-public server or at least isolate it and
+monitor access to the server closely.
+
+Zonemanage will require apache to have write permission on named.conf and all zone files ( /var/named/chroot/var/named/*). 
+To achive this add  the apache user in named group and have the write permission to above files for named group.
+
+If you are switching to Zonemanage from an existing configuration, make sure to
+have current backups of your existing DNS setup.
+

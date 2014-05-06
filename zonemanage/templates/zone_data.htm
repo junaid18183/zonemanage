@@ -6,7 +6,7 @@ Zone Details for {{ zone_name }}
 
 {% block body %}
     <div id="zone_soa" class="zone_box">
-      <h4> SOA - <a href="/editsoa/{{ zone_name }} ">edit</a> </h4>
+      <h4> SOA - <a href="/zonemanage/editsoa/{{ zone_name }} ">edit</a> </h4>
       <table border="1">
         <tr> <td>Primary Master Server (MNAME):</td> <td><b>{{ soa_fields.mname }}</b></td> </tr>
         <tr class="even"> <td>Admin E-mail Address (RNAME):</td> <td> <b>{{ soa_fields.rname }}</b> </td></tr>
@@ -19,7 +19,7 @@ Zone Details for {{ zone_name }}
     </div>
 
    <div id="hostnames_soa" class="zone_box">
-      <h4> Host names - <a href="/editzone/{{ zone_name }}">edit</a> </h4>
+      <h4> Host names - <a href="/zonemanage/editzone/{{ zone_name }}">edit</a> </h4>
         <table class="odd" border="1">
 	{% for record in zone_data.zones %}
     	<tr><td>{{ record.hostname }}</td> <td>{{ record.type }} </td> <td>{{ record.value }} </td> </tr>

@@ -1,5 +1,4 @@
 from django import forms
-from django.forms.formsets import formset_factory
 
 class SOAForm(forms.Form):
     mname = forms.CharField(label='Master Name Server')
@@ -17,6 +16,5 @@ class RecordsForm(forms.Form):
 	hostname = forms.CharField(label='HostName')
 	type = forms.CharField ( label='Record Type')
 	value = forms.CharField ( label='Value')
-	preference = forms.CharField ( label='Preference')
+	preference = forms.CharField ( label='Preference',required=False)
 
-RecordsFormSet = formset_factory(RecordsForm, extra=0)

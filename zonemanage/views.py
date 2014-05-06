@@ -1,4 +1,7 @@
+from django.http import HttpResponse,Http404
 from django.shortcuts import redirect, render
+from django.forms.formsets import formset_factory
+
 import os,fnmatch
 from zonemanage import *
 from forms import *
@@ -33,13 +36,17 @@ def edit_soa(request,zonename):
                         soa_fields = form.cleaned_data
                         status=savesoa(zonename,soa_fields)
 			msg=[zonename + " saved Successfully. However you need to reload the RNDC to make it effective."]
-			A='/reloadzone/'+zonename
+			A='/zonemanage/reloadzone/'+zonename
+			#msg=msg+A
 			URL='Reload Zone'
                         return render(request, "index.htm" , {"data" : msg , 'URL' : URL ,'A' : A } )
+		else:
+			data=[formset.errors]
+                        return render(request, "index.htm" , {"data" : data } )
+
 	else:
 	        form = SOAForm(initial=soa_fields) # An unbound form
-
-	return render(request, 'edit_soa.htm', {'form': form,"zone_name" : zonename})
+		return render(request, 'edit_soa.htm', {'form': form,"zone_name" : zonename})
 
 
 def edit_zone(request,zonename):
@@ -48,27 +55,27 @@ def edit_zone(request,zonename):
 	hostnames = sorted_hostnames(zonename, z.names.keys())
 	zone_data=dns_records(z,hostnames)
 	types=SUPPORTED_RECORD_TYPES
-	return render(request, "edit_zone.htm", { "zone_name" : zonename,"zone_data" : zone_data, "types" : types })
-
-def edit_zone1(request,zonename):
-	"""Edit the Zone details of the zone"""
-	z=get_zone(zonename)
-	hostnames = sorted_hostnames(zonename, z.names.keys())
-	zone_data=dns_records(z,hostnames)
-	types=SUPPORTED_RECORD_TYPES
 	
-
+	RecordsFormSet = formset_factory(RecordsForm, extra=0)
+	
     	if request.method == 'POST': # If the form has been submitted...
-	        email_formset = email_formset(request.POST)
-        	form = RecordsForm(request.POST) # A form bound to the POST data
-	        if form.is_valid() and email_formset.is_valid(): 
-	            # Process the data in form.cleaned_data
-	            # ...
-	            return HttpResponseRedirect('/') # Redirect after POST
+        	formset = RecordsFormSet(request.POST) # A form bound to the POST data
+	        if formset.is_valid(): 
+			for form in formset.forms:
+				if form.is_valid():
+					print ""
+			msg=[zonename + " saved Successfully. However you need to reload the RNDC to make it effective."]
+                        A='/zonemanage/reloadzone/'+zonename
+                        URL='Reload Zone'
+        		return render(request, "index.htm" , {"data" : msg , 'URL' : URL ,'A' : A } )
+		else:
+        		#return HttpResponse("Error")
+			data=[formset.errors]
+			return render(request, "index.htm" , {"data" : data } )
+			
 	else:
 		formset = RecordsFormSet(initial=zone_data['zones'])
-
-	return render(request, "edit_zone1.htm", { "zone_name" : zonename,"form" : formset })
+		return render(request, "edit_zone.htm", { "zone_name" : zonename,"formset" : formset })
 
 
 def save_zone(request,zonename):
