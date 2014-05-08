@@ -37,7 +37,6 @@ def edit_soa(request,zonename):
                         status=savesoa(zonename,soa_fields)
 			msg=[zonename + " saved Successfully. However you need to reload the RNDC to make it effective."]
 			A='/zonemanage/reloadzone/'+zonename
-			#msg=msg+A
 			URL='Reload Zone'
                         return render(request, "index.htm" , {"data" : msg , 'URL' : URL ,'A' : A } )
 		else:
@@ -55,7 +54,7 @@ def edit_zone(request,zonename):
 	hostnames = sorted_hostnames(zonename, z.names.keys())
 	zone_data=dns_records(z,hostnames)
 	types=SUPPORTED_RECORD_TYPES
-	data={}	
+	z_records=[]	
 	RecordsFormSet = formset_factory(RecordsForm, extra=0)
 	
     	if request.method == 'POST': # If the form has been submitted...
@@ -63,15 +62,17 @@ def edit_zone(request,zonename):
 	        if formset.is_valid(): 
 			for form in formset:
 				if form.is_valid():
-					data.update(form.cleaned_data)
-				else:
-					data.update({'juned':'memnon'})
-			#data1=savezone(zonename,data)
-			return render(request, "index.htm" , {"data" : data } )
+					z_records.append(form.cleaned_data)
+			
+			data=savezone(zonename,z_records)
+			A='/zonemanage/reloadzone/'+zonename
+                        URL='Reload Zone'
+
 		else:
-        		#return HttpResponse("Error")
 			data=[formset.errors]
-			return render(request, "index.htm" , {"data" : data } )
+			A='/zonemanage/editzone/'+zonename
+			URL='Edit Zone'
+                return render(request, "index.htm" , {"data" : data , 'URL' : URL ,'A' : A } )
 			
 	else:
 		formset = RecordsFormSet(initial=zone_data['zones'])

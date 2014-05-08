@@ -303,12 +303,11 @@ def editzone(zone):
 
 
 #---------------------------------------------------------------------------------------------------------------
-def savezone(zone,zones ):
+def savezone(zone,z_records ):
 	z = get_zone(zone)
 	save_ok = True
 	auto_inc_serial = False
-	msg=[zones]
-	return msg	
+	
 	# remove existing nodes
 	names = z.names.keys()
 	names.remove(z.domain)  # remove '@' (root)
@@ -319,22 +318,21 @@ def savezone(zone,zones ):
 	   	root.clear_all_records(exclude='SOA')
 
 	# replace with values submitted from form
-	for record in zones:
+	for record in z_records:
 		hostname = record['hostname']
 	        rtype = record['type']
 	        preference = record['preference']
 	        value = record['value']
 
-	        if hostname and value and rtype :
-	        #if hostname and value and rtype in SUPPORTED_RECORD_TYPES:
-		        if hostname not in z.names.keys():
+	        if hostname and value and rtype in SUPPORTED_RECORD_TYPES:
+		        #if hostname not in z.names.keys():
+			if save_ok : # Just for if indent 
 	        	        z.add_name(hostname)
 	            		name = z.names[hostname]
 	            		if rtype == 'MX':
-	                		name.records(rtype, create=True).add( (int(preference), str(value)) )
+					 name.records(rtype, create=True).add( (int(preference), str(value)) )
 	            		else:
-	                		name.records(rtype, create=True).add(str(value))
-	                
+					 name.records(rtype, create=True).add(str(value))
 	        else:
 	        	save_ok = False
 			msg=["Save_Ok failed"]
