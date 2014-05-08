@@ -373,16 +373,11 @@ def dns_records(z,hostnames):
 	        	node = z.names[host].records(ntype)
 	        	if node:
         			for record in node.items:
-			                data = dict(
-                			hostname = host,
-                        		type = ntype,
-		                        value = record,
-        		                preference = '',
-                		        )
-        	        	if ntype == 'MX':
-             				data['preference'] = record[0]
-		                  	data['value'] = record[1]
-		values['zones'].append(data)
+					data = dict(hostname = host,type = ntype,value = record ,preference = '',)
+	        	        	if ntype == 'MX':
+        	     				data['preference'] = record[0]
+			                  	data['value'] = record[1]
+					values['zones'].append(data)
 	return values
 
 #---------------------------------------------------------------------------------------------------------------
