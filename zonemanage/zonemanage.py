@@ -2,10 +2,7 @@ import os
 import shutil
 import logging
 
-from easyzone import easyzone
-from easyzone.zone_check import ZoneCheck
-from easyzone.zone_reload import ZoneReload, ZoneReloadError
-
+from easyzone import Zone,ZoneCheck,ZoneReload,ZoneReloadError
 from config import *
 
 #---------------------------------------------------------------------------------------------------------------
@@ -21,7 +18,7 @@ def get_zone(zonename):
 	is raised.
 	'''
 
-	z = easyzone.Zone(zonename)
+	z = Zone(zonename)
 	zone_file = find_zone_file(zonedir, zonename)
 	z.load_from_file(zone_file)
 	return z
@@ -104,7 +101,7 @@ def get_archive(zonename, filename):
 	If the zone file cannot be found or loaded, a redirect to "/"
 	is raised.
 	'''
-	z = easyzone.Zone(zonename)
+	z = Zone(zonename)
 	if archive_dir is None:
 		raise Exception("archive_dir is not not defined, please check the configuration")
 	zone_file = find_zone_file(archive_dir, filename)
