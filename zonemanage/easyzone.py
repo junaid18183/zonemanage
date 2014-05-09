@@ -18,6 +18,7 @@ __version__ = '1.2.2'
 # - Python Modules -
 from time import localtime, strftime, time
 import types
+import subprocess
 
 # - dnspython Modules - http://www.dnspython.org/
 try:
@@ -328,11 +329,70 @@ class Zone(object):
             filename = self.filename
         self._zone.to_file(filename, relativize=False)
 
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+#Added from zone_reload.py
+class ZoneReloadError(Exception):
+    '''An error occurred within ZoneReload.
+    '''
 
+class ZoneReload(object):
+    '''A wrapper around bind's rndc utility, used for reloading a modified
+    DNS zone.
 
+    `rndc` : string containing path to rndc binary.  Or leave as "rndc"
+    to search with default PATH.
+    '''
+    def __init__(self, rndc='rndc'):
+        self.rndc = rndc
 
+    def reload(self, zone):
+        '''Ask named to perform a zone reload by calling the
+        rndc commmand.
+        '''
+        cmd = [
+            self.rndc,
+            'reload',
+            zone
+        ]
 
+        r = subprocess.call(cmd)
 
+        if r != 0:
+            raise ZoneReloadError("rndc failed with return code %d" % r)
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+#Added from zone_check.py
+class ZoneCheck(object):
+    '''A wrapper around bind's named-checkzone utility, used for checking the
+    syntax of a zone file.
+
+    `checkzone` : string containing path to named-checkzone binary.  Or leave
+    as "named-checkzone" to search with default PATH.
+    '''
+    def __init__(self, checkzone='checkzone'):
+        self.checkzone = checkzone
+        self.error = None
+
+    def isValid(self, zonename, filename):
+        '''Ask named to check the syntax of a zone file by calling the
+        named-checkzone commmand.
+        '''
+        cmd = [
+            self.checkzone,
+            '-q',
+            zonename,
+            filename
+        ]
+
+        r = subprocess.call(cmd)
+
+        if r != 0:
+            self.error = 'Bad syntax'
+            return False
+
+        else:
+            self.error = None
+            return True
+#--------------------------------------------------------------------------------------------------------------------------------------------------
 # ---- Module Functions ----
 
 def zone_from_file(domain, filename):
@@ -389,3 +449,4 @@ def soa_from_node(node):
     else:
         soa = None
     return soa
+#--------------------------------------------------------------------------------------------------------------------------------------------------
