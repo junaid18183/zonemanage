@@ -1,20 +1,28 @@
 {% extends "base.htm" %}
 
 {% block pageheader %}
+<script type="text/javascript">
+           $(function() {
+               $('#myForm tbody tr').formset();
+           })
+</script>
 Editing Zone Details for {{ zone_name }} 
+
 {% endblock pageheader %}
 
 {% block body %}
-<form action="/zonemanage/editzone/{{zone_name }}/" method="post">{% csrf_token %}
+<form id="myForm" action="/zonemanage/editzone/{{zone_name }}/" method="post">{% csrf_token %}
 {{ formset.management_form }}
 <table>
 	<tr><th>Hostname</th><th>Type</th><th>Value</th><th>Preference</th></tr>
         {% for form in formset %}
 	<tr>
         <td>{{ form.hostname }}</td><td>{{ form.type }}</td><td>{{ form.value }}</td><td>{{ form.preference }}</td>
+	<td>
+	</td>
 	</tr>
         {% endfor %}
     </table>
-<input type="submit" value="Submit" />
+<input type="submit" value="Submit" name="submit"/>
 </form>
 {% endblock body %}

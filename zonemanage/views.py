@@ -58,21 +58,20 @@ def edit_zone(request,zonename):
 	RecordsFormSet = formset_factory(RecordsForm, extra=0)
 	
     	if request.method == 'POST': # If the form has been submitted...
-        	formset = RecordsFormSet(request.POST) # A form bound to the POST data
-	        if formset.is_valid(): 
+       		formset = RecordsFormSet(request.POST) # A form bound to the POST data
+        	if formset.is_valid(): 
 			for form in formset:
 				if form.is_valid():
 					z_records.append(form.cleaned_data)
-			
+	
 			data=savezone(zonename,z_records)
 			A='/zonemanage/reloadzone/'+zonename
-                        URL='Reload Zone'
-
+                       	URL='Reload Zone'
 		else:
 			data=[formset.errors]
 			A='/zonemanage/editzone/'+zonename
 			URL='Edit Zone'
-                return render(request, "index.htm" , {"data" : data , 'URL' : URL ,'A' : A } )
+               	return render(request, "index.htm" , {"data" : data , 'URL' : URL ,'A' : A } )
 			
 	else:
 		formset = RecordsFormSet(initial=zone_data['zones'])
