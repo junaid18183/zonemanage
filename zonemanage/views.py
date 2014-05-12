@@ -86,4 +86,6 @@ def reload_zone(request,zonename):
 	"""Save the Zone details of the zone"""
 	status=reload(zonename)
 	data=[status,"Reload of zone "+zonename+" Successfull"]
-	return render(request, "index.htm",{"data" : data } )
+	A='/zonemanage/editzone/'+zonename
+	URL=zonename
+	return render(request, "index.htm",{"data" : data , 'URL' : URL ,'A' : A } )

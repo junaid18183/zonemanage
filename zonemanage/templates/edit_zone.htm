@@ -6,6 +6,23 @@
                $('#myForm tbody tr').formset();
            })
 </script>
+<style type="text/css">
+    .add-row {
+        padding-left:18px;
+        background:url({{ STATIC_URL }}images/add.png) no-repeat left center;
+    }
+    .delete-row {
+        display:block;
+        margin:6px 0 0 0;
+        padding-left:18px;
+        background:url({{ STATIC_URL }}images/delete.png) no-repeat left center;
+    }
+    .dynamic-form {
+        margin-bottom:6px;
+        padding-bottom:6px;
+        border-bottom:1px dotted #ccc;
+    }
+</style>
 Editing Zone Details for {{ zone_name }} 
 
 {% endblock pageheader %}
@@ -16,11 +33,12 @@ Editing Zone Details for {{ zone_name }}
 <table>
 	<tr><th>Hostname</th><th>Type</th><th>Value</th><th>Preference</th></tr>
         {% for form in formset %}
-	<tr>
+	<tr id="{{ form.prefix }}-row">
         <td>{{ form.hostname }}</td><td>{{ form.type }}</td><td>{{ form.value }}</td><td>{{ form.preference }}</td>
 	<td>
 	</td>
 	</tr>
+	<tr></tr>
         {% endfor %}
     </table>
 <input type="submit" value="Submit" name="submit"/>
