@@ -1,0 +1,30 @@
+{% extends "base.htm" %}
+
+{% block pageheader %}
+Zone Details for {{ zone_name }} from archive {{ archive }}
+{% endblock pageheader %}
+
+{% block body %}
+    <div id="zone_soa" class="zone_box">
+      <h4> SOA - </h4>
+      <table border="1">
+        <tr> <td>Primary Master Server (MNAME):</td> <td><b>{{ soa_fields.mname }}</b></td> </tr>
+        <tr class="even"> <td>Admin E-mail Address (RNAME):</td> <td> <b>{{ soa_fields.rname }}</b> </td></tr>
+        <tr> <td>Serial Number:</td> <td> <b>{{ soa_fields.serial }}</b> </td></tr>
+        <tr class="even"> <td>Refresh (seconds):</td> <td> <b>{{ soa_fields.refresh }}</b> </td></tr>
+        <tr> <td>Retry (seconds):</td> <td> <b>{{ soa_fields.retry }}</b> </td></tr>
+        <tr class="even"> <td>Expire (seconds):</td> <td> <b>{{ soa_fields.expire }}</b> </td></tr>
+        <tr> <td>Minimum TTL (seconds):</td> <td> <b>{{ soa_fields.minttl }}</b> </td></tr>
+      </table>
+    </div>
+
+   <div id="hostnames_soa" class="zone_box">
+      <h4> Host names - </h4>
+        <table class="odd" border="1">
+	{% for record in zone_data.zones %}
+    	<tr><td>{{ record.hostname }}</td> <td>{{ record.type }} </td> <td>{{ record.value }} </td> </tr>
+	{% endfor %}
+      </table>
+    </div>
+
+{% endblock body %}
