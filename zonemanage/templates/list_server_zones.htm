@@ -7,13 +7,12 @@ Zone List on server
 
 {% block body %}
 <table class="table sortable">
-  <tr>
-    <th>Zones</th>
-  </tr>
 {% for current_zone in zone_array %}
-    <tr>
-      <td><a href="../zone_detail/{{ current_zone }}/">{{ current_zone }}</a></td>
-    </tr>
+<tr>
+<td>{{ current_zone }}</td>
+<td><a href="/zonemanage/zone_detail/{{ current_zone }}/">Detail</a></td>
+<td><a href="/zonemanage/history/{{ current_zone }}/">History</a></td>
+</tr>
 {% endfor %}
 </table>
 

@@ -2,7 +2,6 @@ from django.http import HttpResponse,Http404
 from django.shortcuts import redirect, render
 from django.forms.formsets import formset_factory
 
-import os,fnmatch
 from zonemanage import *
 from forms import *
 
@@ -13,8 +12,7 @@ def home(request):
 
 def view_zone_list(request):
 	""" List the main index page for ZoneManage """
-	zone_array = [f for f in os.listdir(zonedir) if len(f) > 2 and f[0] not in ('.', '_')]
-	zone_array = [f for f in os.listdir(zonedir) if fnmatch.fnmatch(f,'*.arpa') or fnmatch.fnmatch(f,'glam.*')]
+	zone_array = get_zone_list()
 	return render(request, "list_server_zones.htm",{ "zone_array" : zone_array})
 
 
@@ -86,6 +84,19 @@ def reload_zone(request,zonename):
 	"""Save the Zone details of the zone"""
 	status=reload(zonename)
 	data=[status,"Reload of zone "+zonename+" Successfull"]
-	A='/zonemanage/editzone/'+zonename
+	A='/zonemanage/zone_detail/'+zonename
 	URL=zonename
 	return render(request, "index.htm",{"data" : data , 'URL' : URL ,'A' : A } )
+
+
+def archive_list(request,zonename):
+	zone_array = get_zone_archive_list(zonename)
+        return render(request, "archieve_list.htm",{ "zone_array" : zone_array,"zonename":zonename})
+	
+def load_archive(request,zonename,archive_soa):
+	arch_file=zonename+"."+archive_soa
+	z=get_archive(zonename,arch_file)
+	soa_fields=soa_detail(z)
+        hostnames = sorted_hostnames(zonename, z.names.keys())
+        zone_data=dns_records(z,hostnames)
+        return render(request, "archieve_zone_data.htm", { "zone_name" : zonename,"zone_data" : zone_data,"soa_fields" : soa_fields, "archive":arch_file})

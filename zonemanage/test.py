@@ -10,26 +10,17 @@ settings.configure()
 zonename='glam.com'
 z =  get_zone(zonename)
 
-
-def juned(z,hostnames):
-        values = dict(
-                zones = [],
-                )
-        for host in hostnames:
-                for ntype in SUPPORTED_RECORD_TYPES:
-                        node = z.names[host].records(ntype)
-                        if node:
-                                for record in node.items:
-                                        data = dict(hostname = host,type = ntype,value = record ,preference = '',)
-        	                        if ntype == 'MX':
-                	                        data['preference'] = record[0]
-                        	                data['value'] = record[1]
-		                	values['zones'].append(data)
-        return values
+def juned(zonename):
+        #archive_dir is the direcory location defined in configuration
+        zone_array = [f for f in os.listdir(archive_dir) if fnmatch.fnmatch(f,zonename+".*")]
+        return zone_array
 
 
 hostnames=['glam.com.']
 
-data=juned(z,hostnames)
+data=juned(zonename)
 #data=z.names.keys()
 print data
+
+soa_array = [ i.split(zonename,1)[1][1:] for i in data]
+print soa_array

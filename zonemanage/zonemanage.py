@@ -1,6 +1,7 @@
 import os
 import shutil
 import logging
+import fnmatch
 
 from easyzone import Zone,ZoneCheck,ZoneReload,ZoneReloadError
 from config import *
@@ -10,6 +11,17 @@ CHANGE_TYPE_SAVE = 'S'
 CHANGE_TYPE_RELOAD = 'R'
 CHANGE_TYPE_REVERT = 'V'
 CHANGE_TYPES = (CHANGE_TYPE_SAVE, CHANGE_TYPE_RELOAD, CHANGE_TYPE_REVERT)
+#---------------------------------------------------------------------------------------------------------------
+def get_zone_list():
+	#zonedir is the direcory location defined in configuration
+	zone_array = [f for f in os.listdir(zonedir) if len(f) > 2 and f[0] not in ('.', '_')]
+	zone_array = [f for f in os.listdir(zonedir) if fnmatch.fnmatch(f,'*.arpa') or fnmatch.fnmatch(f,'glam.*')]
+	return zone_array
+#---------------------------------------------------------------------------------------------------------------
+def get_zone_archive_list(zonename):
+	#archive_dir is the direcory location defined in configuration
+	zone_array = [f for f in os.listdir(archive_dir) if fnmatch.fnmatch(f,zonename+".*")]
+	return zone_array
 #---------------------------------------------------------------------------------------------------------------
 def get_zone(zonename):
 	'''Return a Zone instance for zonename that has been loaded
@@ -376,5 +388,4 @@ def dns_records(z,hostnames):
 			                  	data['value'] = record[1]
 					values['zones'].append(data)
 	return values
-
 #---------------------------------------------------------------------------------------------------------------
