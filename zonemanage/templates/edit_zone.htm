@@ -34,7 +34,10 @@ Editing Zone Details for {{ zone_name }}
 	<tr><th>Hostname</th><th>Type</th><th>Value</th><th>Preference</th></tr>
         {% for form in formset %}
 	<tr id="{{ form.prefix }}-row">
-        <td>{{ form.hostname }}</td><td>{{ form.type }}</td><td>{{ form.value }}</td><td>{{ form.preference }}</td>
+        <td>{{ form.hostname }}</td><td>{{ form.type }}</td><td>{{ form.value }}</td>
+	{% if form.type == "MX" %} 
+	<td>{{ form.preference }}</td>
+	{% endif %} 
 	<td>
 	</td>
 	</tr>
@@ -42,5 +45,6 @@ Editing Zone Details for {{ zone_name }}
         {% endfor %}
     </table>
 <input type="submit" value="Submit" name="submit"/>
+<a href="/zonemanage"> Cancel </a>
 </form>
 {% endblock body %}

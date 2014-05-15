@@ -232,7 +232,6 @@ def history(self, zone=None):
 	    )
 #---------------------------------------------------------------------------------------------------------------
 def savesoa(zone,soa_fields):
-	    #zone = soa_fields['zone']
 	    z = get_zone(zone)
 
 	    soa = z.root.soa
@@ -246,7 +245,7 @@ def savesoa(zone,soa_fields):
 	    if soa.serial == soa_fields['serial']:
 	        auto_inc_serial = True
 	    else:
-	        auto_inc_serial = True ##Changed 29042014
+	        auto_inc_serial = False ##Changed 29042014
 	        soa.serial = soa_fields['serial']
 
 	    archive_file = archive_zone(z)
@@ -330,7 +329,8 @@ def savezone(zone,z_records ):
 	for record in z_records:
 		hostname = record['hostname']
 	        rtype = record['type']
-	        preference = record['preference']
+	        preference = 10
+	        #preference = record['preference']  #commented on 15May
 	        value = record['value']
 
 	        if hostname and value and rtype in SUPPORTED_RECORD_TYPES:
