@@ -4,6 +4,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+     url(r'^login/$', 'django.contrib.auth.views.login',{'template_name': 'login.htm'}),
+     url(r'^logout/$', 'django.contrib.auth.views.logout',{'template_name' :'logout.htm'}),
      url(r'^admin/', include(admin.site.urls)),
      url(r'^$', 'zonemanage.views.home', name='home'),
      url(r'^zone_list/$', 'zonemanage.views.view_zone_list', name="zone_list"),

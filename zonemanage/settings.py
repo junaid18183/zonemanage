@@ -65,6 +65,18 @@ ROOT_URLCONF = 'zonemanage.urls'
 
 TEMPLATE_DIRS = (os.path.join(SITE_ROOT, "templates"),)
 #STATICFILES_DIRS = ("/home/junedm/zonemanage/zonemanage/static/",)
+
+LOGIN_URL="/zonemanage/login/"
+
+##Added For LDAP#####
+
+#AUTHENTICATION_BACKENDS = (
+#    'django_auth_ldap.backend.ActiveDirectoryGroupMembershipSSLBackend',
+#    'django.contrib.auth.backends.ModelBackend'
+#)
+
+
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',

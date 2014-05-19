@@ -5,12 +5,22 @@ Work in progress
 ==How to start==
  python manage.py runserver 0.0.0.0:8888
 
+Sunc DB
+
+python manage.py syncdb
+
+==Permission Issues==
+
+The /home/junedm/zonemanage/zonemanage/db shoule have r/w permission from apache
+
 ==Dependacies==
 Requires django (>1.6.4)
 Check the version using 
 python -c "import django; print(django.get_version())"
 
 dnspython Modules - http://www.dnspython.org/
+
+#python-ldap  - http://pythonhosted.org/django-auth-ldap/index.html
 
 easyzone(written by Chris Miles https://pypi.python.org/pypi/easyzone/1.2.2 ) ( no need to install , already added in the zonemanage code)
 django-dynamic-formset (https://code.google.com/p/django-dynamic-formset/wiki/Usage) ( No need to install already added in the zonemanage code) - This is used to add dynamic form

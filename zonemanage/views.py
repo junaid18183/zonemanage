@@ -1,21 +1,34 @@
 from django.http import HttpResponse,Http404
 from django.shortcuts import redirect, render
 from django.forms.formsets import formset_factory
+from django.contrib.auth.decorators import login_required
+
+from django.contrib.auth import logout
 
 from zonemanage import *
 from forms import *
+
+
+
+def logout_view(request):
+    logout(request)
+    msg=["Logged Out Successfully"]
+    return render(request, "index.htm" , {'data' : msg})
 
 def home(request):
 	""" List the main index page for ZoneManage """
 	msg=["Welcome to Zonemanage"]
 	return render(request, "index.htm" , {'data' : msg})
 
+
+@login_required
 def view_zone_list(request):
 	""" List the main index page for ZoneManage """
 	zone_array = get_zone_list()
 	return render(request, "list_server_zones.htm",{ "zone_array" : zone_array})
 
 
+@login_required
 def view_zone_detail(request,zonename):
 	"""Get the details of the zone"""
 	z=get_zone(zonename)
@@ -24,6 +37,7 @@ def view_zone_detail(request,zonename):
 	zone_data=dns_records(z,hostnames)
 	return render(request, "zone_data.htm", { "zone_name" : zonename,"zone_data" : zone_data,"soa_fields" : soa_fields})
 
+@login_required
 def edit_soa(request,zonename):
 	"""Edit the SOA details of the zone"""
 	z=get_zone(zonename)
@@ -46,6 +60,7 @@ def edit_soa(request,zonename):
 		return render(request, 'edit_soa.htm', {'form': form,"zone_name" : zonename})
 
 
+@login_required
 def edit_zone(request,zonename):
 	"""Edit the Zone details of the zone"""
 	z=get_zone(zonename)
@@ -76,10 +91,12 @@ def edit_zone(request,zonename):
 		return render(request, "edit_zone.htm", { "zone_name" : zonename,"formset" : formset })
 
 
+@login_required
 def save_zone(request,zonename):
 	"""Save the Zone details of the zone"""
 	return render(request, "save_zone.htm" )
 
+@login_required
 def reload_zone(request,zonename):
 	"""Save the Zone details of the zone"""
 	status=reload(zonename)
@@ -89,10 +106,12 @@ def reload_zone(request,zonename):
 	return render(request, "index.htm",{"data" : data , 'URL' : URL ,'A' : A } )
 
 
+@login_required
 def archive_list(request,zonename):
 	zone_array = get_zone_archive_list(zonename)
         return render(request, "archieve_list.htm",{ "zone_array" : zone_array,"zonename":zonename})
 	
+@login_required
 def load_archive(request,zonename,archive_soa):
 	arch_file=zonename+"."+archive_soa
 	z=get_archive(zonename,arch_file)
