@@ -23,3 +23,16 @@ zonefile='/var/named/chroot/var/named/glam.colo'
 #zone_data=dns_records(z,hostnames)
 #types=SUPPORTED_RECORD_TYPES
 #print zone_data['zones']
+
+#name="AbhishekT"
+#basedn="DC=projecty,DC=com"
+#import ldap
+#server = 'ldap://10.0.1.3'
+#user_dn = 'CN=jenkins,OU=service accounts,DC=projecty,DC=com'
+#password = 'in$45Jun'
+#con = ldap.initialize(server)
+#con.simple_bind_s(user_dn, password)
+#con.set_option(ldap.OPT_REFERRALS, 0)
+#filter = "(&(objectClass=person)(sAMAccountName=name))"
+#attrs = ['sn']
+#results = con.search_s(basedn,ldap.SCOPE_SUBTREE,filter,attrs )
