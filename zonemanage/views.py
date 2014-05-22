@@ -15,9 +15,11 @@ def logout_view(request):
     msg=["Logged Out Successfully"]
     return render(request, "index.htm" , {'data' : msg})
 
+@login_required
 def home(request):
 	""" List the main index page for ZoneManage """
-	msg=["Welcome to Zonemanage"]
+	uid = request.user.username
+	msg=["Welcome to Zonemanage",uid]
 	return render(request, "index.htm" , {'data' : msg})
 
 
@@ -40,14 +42,15 @@ def view_zone_detail(request,zonename):
 @login_required
 def edit_soa(request,zonename):
 	"""Edit the SOA details of the zone"""
+	uid = request.user.username
 	z=get_zone(zonename)
 	soa_fields=soa_detail(z)
     	if request.method == 'POST': # If the form has been submitted...
         	form = SOAForm(request.POST) # A form bound to the POST data
 	        if form.is_valid(): # All validation rules pass
                         soa_fields = form.cleaned_data
-                        status=savesoa(zonename,soa_fields)
-			msg=[zonename + " saved Successfully. However you need to reload the RNDC to make it effective."]
+                        data=savesoa(zonename,soa_fields,uid)
+			msg=[data]
 			A='/zonemanage/reloadzone/'+zonename
 			URL='Reload Zone'
                         return render(request, "index.htm" , {"data" : msg , 'URL' : URL ,'A' : A } )
@@ -63,6 +66,7 @@ def edit_soa(request,zonename):
 @login_required
 def edit_zone(request,zonename):
 	"""Edit the Zone details of the zone"""
+	uid = request.user.username
 	z=get_zone(zonename)
 	hostnames = sorted_hostnames(zonename, z.names.keys())
 	zone_data=dns_records(z,hostnames)
@@ -77,7 +81,7 @@ def edit_zone(request,zonename):
 				if form.is_valid():
 					z_records.append(form.cleaned_data)
 	
-			data=savezone(zonename,z_records)
+			data=savezone(zonename,z_records,uid)
 			A='/zonemanage/reloadzone/'+zonename
                        	URL='Reload Zone'
 		else:
@@ -92,11 +96,6 @@ def edit_zone(request,zonename):
 
 
 @login_required
-def save_zone(request,zonename):
-	"""Save the Zone details of the zone"""
-	return render(request, "save_zone.htm" )
-
-@login_required
 def reload_zone(request,zonename):
 	"""Save the Zone details of the zone"""
 	status=reload(zonename)
@@ -108,8 +107,8 @@ def reload_zone(request,zonename):
 
 @login_required
 def archive_list(request,zonename):
-	zone_array = get_zone_archive_list(zonename)
-        return render(request, "archieve_list.htm",{ "zone_array" : zone_array,"zonename":zonename})
+	records = get_zone_archive_list(zonename)
+        return render(request, "archieve_list.htm",{ "records" : records,"zonename":zonename})
 	
 @login_required
 def load_archive(request,zonename,archive_soa):

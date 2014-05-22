@@ -24,3 +24,6 @@ print data
 
 soa_array = [ i.split(zonename,1)[1][1:] for i in data]
 print soa_array
+
+records=
+

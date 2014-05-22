@@ -21,7 +21,10 @@ def get_zone_list():
 def get_zone_archive_list(zonename):
 	#archive_dir is the direcory location defined in configuration
 	zone_array = [f for f in os.listdir(archive_dir) if fnmatch.fnmatch(f,zonename+".*")]
-	return zone_array
+	soa_array = [ i.split(zonename,1)[1][1:] for i in zone_array]
+	records = [ i.split("_") for i in soa_array ]
+	
+	return records
 #---------------------------------------------------------------------------------------------------------------
 def get_zone(zonename):
 	'''Return a Zone instance for zonename that has been loaded
@@ -83,7 +86,7 @@ def check_zone(zonename, zonefile):
 	    msg=("ZoneCheck failed for zone='%s' file='%s' error was: %s" %(zonename, zonefile, c.error))
 	return r
 #---------------------------------------------------------------------------------------------------------------
-def archive_zone(zone):
+def archive_zone(zone,uid):
 	'''Copies a zone file to the archive directory defined in config
 	by "archive_dir".
 
@@ -95,7 +98,8 @@ def archive_zone(zone):
 	if archive_dir is None:
 	    return None
 
-	filename = zone.domain + str(zone.root.soa.serial)
+
+	filename = zone.domain + str(zone.root.soa.serial) + "-" + uid
 
 	full_path = os.path.join(archive_dir, filename)
 
@@ -168,7 +172,7 @@ def confirm_revert(self, zone=None, archive=None, yes=None, no=None, cancel=None
 	    za = get_archive(zone, archive)
 	    archive_serial = za.root.soa.serial
 
-	    archive_file = archive_zone(z)
+	    archive_file = archive_zone(z,uid)
 
 	    za.root.soa.serial = z.root.soa.serial
 	    za.save(filename=z.filename, autoserial=True)
@@ -231,11 +235,9 @@ def history(self, zone=None):
 	        zonename = zone,
 	    )
 #---------------------------------------------------------------------------------------------------------------
-def savesoa(zone,soa_fields):
+def savesoa(zone,soa_fields,uid):
 	    z = get_zone(zone)
-
 	    soa = z.root.soa
-
 	    soa.mname = soa_fields['mname']
 	    soa.rname = soa_fields['rname']
 	    soa.refresh = soa_fields['refresh']
@@ -245,10 +247,10 @@ def savesoa(zone,soa_fields):
 	    if soa.serial == soa_fields['serial']:
 	        auto_inc_serial = True
 	    else:
-	        auto_inc_serial = False ##Changed 29042014
+	        auto_inc_serial = False
 	        soa.serial = soa_fields['serial']
 
-	    archive_file = archive_zone(z)
+	    archive_file = archive_zone(z,uid)
 	    archive_serial = z.root.soa.serial
 
 	    try:
@@ -260,58 +262,13 @@ def savesoa(zone,soa_fields):
 	        if not check_zone(z.domain, z.filename):
 	            msg="Zone was saved but failed syntax check. Please examine file:"+z.filename
 	        else:
-	            msg="Updated SOA for"+z.domain
+		    msg=z.domain + " saved Successfully. However you need to reload the RNDC to make it effective.The original zone is preserved as " + archive_file
 	            audit_change(CHANGE_TYPE_SAVE, z.domain, archive_file, archive_serial, 'junedm')
 
-	    return z.domain
+	    return msg
 
 #---------------------------------------------------------------------------------------------------------------
-def editzone(zone):
-	    z = get_zone(zone)
-	    hostnames = sorted_hostnames(zone, z.names.keys())
-
-	    values = dict(
-	        zone = zone,
-	        zones = [],
-	    )
-
-	    attrs = dict(
-	        zones = [],
-	    )
-
-	    for host in hostnames:
-	        for ntype in SUPPORTED_RECORD_TYPES:
-	            node = z.names[host].records(ntype)
-	            if node:
-	                for record in node.items:
-	                    inputrow = dict(
-	                            hostname = host,
-	                            type = ntype,
-	                            value = record,
-	                            preference = '',
-	                    )
-	                    rowattrs = dict()
-	                    if ntype == 'MX':
-	                        inputrow['preference'] = record[0]
-	                        inputrow['value'] = record[1]
-	                    else:
-	                        rowattrs['preference'] = dict(style='visibility:hidden;', size=4)
-	                    values['zones'].append(inputrow)
-	                    attrs['zones'].append(rowattrs)
-	    return dict(
-	        action = 'savezone',
-	        crumbtrail = crumbtrail,
-	        form = expanding_form,
-	        options = {},
-	        attrs = attrs,
-	        submit_text = _(u'Save'),
-	        value = values,
-	        zonename = z.domain,
-	    )
-
-
-#---------------------------------------------------------------------------------------------------------------
-def savezone(zone,z_records ):
+def savezone(zone,z_records,uid ):
 	z = get_zone(zone)
 	save_ok = True
 	auto_inc_serial = False
@@ -347,14 +304,14 @@ def savezone(zone,z_records ):
 			msg=["Save_Ok failed"]
 
 	if save_ok:
-		archive_file = archive_zone(z)
+		archive_file = archive_zone(z,uid)
 	        archive_serial = z.root.soa.serial
 	        auto_inc_serial = True
 	        z.save(autoserial=auto_inc_serial)
 	        if not check_zone(z.domain, z.filename):
 	        	msg=["Zone was saved but failed syntax check. Please examine file: %s" %z.filename]
 	        else:
-	            	msg=["Zone %s has been saved. Don't forget to signal named to reload the zone." % z.domain]
+	            	msg=["Zone %s has been saved. Don't forget to signal named to reload the zone.The original copy is preserved as %s" % (z.domain,archive_file)]
 	            	#audit_change(CHANGE_TYPE_SAVE, z.domain, archive_file, archive_serial, identity.current.user.user_id)
 	return msg	
 

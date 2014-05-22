@@ -7,17 +7,14 @@ Zone List on server
 
 {% block body %}
 <table class="table sortable">
-<tr><th>Zone</th><th>Archive_SOA</th><th>Detail</th></tr>
-{% for current_zone in zone_array %}
+<tr><th>Zone</th><th>Archive_SOA</th><th>User</th><th>Detail</th></tr>
+{% for soa,user in records %}
 <tr>
 <td>{{ zonename }}</td>
-{% with SOA=current_zone|cut:zonename%}
-{% with archive=SOA|cut:"."%}
-<td>{{ archive }}</td>
-<td><a href="/zonemanage/load_archive/{{ zonename}}/{{archive }}/">History</a></td>
+<td>{{ soa }}</td>
+<td>{{ user }}</td>
+<td><a href="/zonemanage/load_archive/{{ zonename}}/{{soa}}-{{user}}/">History</a></td>
 </tr>
-{% endwith %}
-{% endwith %}
 {% endfor %}
 </table>
 
