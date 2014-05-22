@@ -98,9 +98,10 @@ def archive_zone(zone,uid):
 	if archive_dir is None:
 	    return None
 
+	if not uid:
+		uid='admin'
 
 	filename = zone.domain + str(zone.root.soa.serial) + "-" + uid
-
 	full_path = os.path.join(archive_dir, filename)
 
 	if os.path.exists(full_path):
@@ -127,84 +128,17 @@ def get_archive(zonename, filename):
 	z.load_from_file(zone_file)
 	return z
 #---------------------------------------------------------------------------------------------------------------
-def audit_change(change_type, zone, filename, serial, user_id):
-	assert change_type in CHANGE_TYPES
-	#change = ChangeHistory(zone=zone, user=user_id, serial=serial, change_type=change_type, archived_name=filename)
-#---------------------------------------------------------------------------------------------------------------
-	def revert(self, zone=None, archive=None):
-	    z = get_zone(zone)
-	    za = get_archive(zone, archive)
+def revert(zone,archive,uid):
+	z = get_zone(zone)
+	za = get_archive(zone, archive)
+	archive_serial = za.root.soa.serial
+	archive_file = archive_zone(z,uid)
 
-	    crumbtrail = [
-	        # Tuples of ('display text', href) where href is string or None
-	        dict( text=_(u'Home'), href='../' ),
-	        dict( text=_(u'Manage Zones'), href='./' ),
-	        dict( text=z.domain, href='manage?zone=%s' %z.domain ),
-	        dict( text=_(u'Change History'), href="history?zone=%s" %z.domain ),
-	        dict( text=str(za.root.soa.serial), href="history_record?zone=%s&archive=%s" %(z.domain, archive) ),
-	        dict( text=_(u'Revert'), href=None ),
-	    ]
+	za.root.soa.serial = z.root.soa.serial
+	za.save(filename=z.filename, autoserial=True)
 
-	    return dict(
-	        action = 'confirm_revert',
-	        archived_zone = za,
-	        archivename = archive,
-	        crumbtrail = crumbtrail,
-	        form = BooleanForm(fields=[widgets.HiddenField('zone'), widgets.HiddenField('archive')]),
-	        no_text = 'Cancel',
-	        options = {},
-	        value = dict(
-	                zone = z.domain,
-	                archive = archive,
-	        ),
-	        yes_text = 'Confirm',
-	        zone = z,
-	        zonename = z.domain,
-	    )
-
-#---------------------------------------------------------------------------------------------------------------
-def confirm_revert(self, zone=None, archive=None, yes=None, no=None, cancel=None, confirm=None):
-	    if not yes:
-	        flash( _(u'Changes cancelled.'), FLASH_WARNING )
-	        redirect("/zone/history_record?zone=%s&archive=%s" % (zone, archive))
-	
-	    z = get_zone(zone)
-	    za = get_archive(zone, archive)
-	    archive_serial = za.root.soa.serial
-
-	    archive_file = archive_zone(z,uid)
-
-	    za.root.soa.serial = z.root.soa.serial
-	    za.save(filename=z.filename, autoserial=True)
-
-	    audit_change(CHANGE_TYPE_REVERT, za.domain, archive_file, z.root.soa.serial, identity.current.user.user_id)
-
-	    flash( _(u"Zone reverted back to serial %s") %archive_serial, FLASH_INFO )
-	    redirect("/zone/manage?zone=%s" %za.domain)
-#---------------------------------------------------------------------------------------------------------------
-def history_record(self, zone=None, archive=None):
-	    z = get_archive(zone, archive)
-
-	    hostnames = sorted_hostnames(archive, z.names.keys())
-
-	    crumbtrail = [
-	        # Tuples of ('display text', href) where href is string or None
-	        dict( text=_(u'Home'), href='../' ),
-	        dict( text=_(u'Manage Zones'), href='./' ),
-	        dict( text=z.domain, href='manage?zone=%s' %z.domain ),
-	        dict( text=_(u'Change History'), href="history?zone=%s" %z.domain ),
-	        dict( text=str(z.root.soa.serial), href=None )
-	    ]
-
-	    return dict(
-	        archivename = archive,
-	        crumbtrail = crumbtrail,
-	        hostnames = hostnames,
-	        names = z.names,
-	        root = z.root,
-	        soa = z.root.soa,
-	        zonename = z.domain,
-	    )
+	msg=["Zone reverted back from archive %s"  %archive]
+	return msg
 #---------------------------------------------------------------------------------------------------------------
 def reload(zone):
 	z = get_zone(zone)
@@ -221,19 +155,8 @@ def reload(zone):
 		               	raise Exception("zone reload failed: %s",err)
 			else:
 	                	msg="named has been signalled to reload zone:"+z.domain
-		                audit_change(CHANGE_TYPE_RELOAD, z.domain, None, z.root.soa.serial,'junedm')
 	return msg
 
-#---------------------------------------------------------------------------------------------------------------
-def history(self, zone=None):
-	    z = get_zone(zone)
-	    history = ChangeHistory.history_records(z.domain)
-	    return dict(
-	        crumbtrail = crumbtrail,
-	        grid = history_grid,
-	        history = history,
-	        zonename = zone,
-	    )
 #---------------------------------------------------------------------------------------------------------------
 def savesoa(zone,soa_fields,uid):
 	    z = get_zone(zone)
@@ -263,7 +186,6 @@ def savesoa(zone,soa_fields,uid):
 	            msg="Zone was saved but failed syntax check. Please examine file:"+z.filename
 	        else:
 		    msg=z.domain + " saved Successfully. However you need to reload the RNDC to make it effective.The original zone is preserved as " + archive_file
-	            audit_change(CHANGE_TYPE_SAVE, z.domain, archive_file, archive_serial, 'junedm')
 
 	    return msg
 
@@ -312,7 +234,6 @@ def savezone(zone,z_records,uid ):
 	        	msg=["Zone was saved but failed syntax check. Please examine file: %s" %z.filename]
 	        else:
 	            	msg=["Zone %s has been saved. Don't forget to signal named to reload the zone.The original copy is preserved as %s" % (z.domain,archive_file)]
-	            	#audit_change(CHANGE_TYPE_SAVE, z.domain, archive_file, archive_serial, identity.current.user.user_id)
 	return msg	
 
 #---------------------------------------------------------------------------------------------------------------

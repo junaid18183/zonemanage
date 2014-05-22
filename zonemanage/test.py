@@ -10,20 +10,18 @@ settings.configure()
 zonename='glam.com'
 z =  get_zone(zonename)
 
-def juned(zonename):
-        #archive_dir is the direcory location defined in configuration
-        zone_array = [f for f in os.listdir(archive_dir) if fnmatch.fnmatch(f,zonename+".*")]
-        return zone_array
+def revert(zone,archive):
+        z = get_zone(zone)
+        za = get_archive(zone, archive)
+        archive_serial = za.root.soa.serial
+        archive_file = archive_zone(z,'admin')
+
+        za.root.soa.serial = z.root.soa.serial
+        za.save(filename=z.filename, autoserial=True)
+
+        msg=["Zone %s reverted back to serial %s"  %(zonename,archive_serial)]
+        return msg
 
 
-hostnames=['glam.com.']
-
-data=juned(zonename)
-#data=z.names.keys()
+data=revert(zonename,'glam.com.2014052221-junedm')
 print data
-
-soa_array = [ i.split(zonename,1)[1][1:] for i in data]
-print soa_array
-
-records=
-

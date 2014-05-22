@@ -27,4 +27,15 @@ Zone Details for {{ zone_name }} from archive {{ archive }}
       </table>
     </div>
 
+<p>
+<p>
+<p>
+
+
+{% with archive=archive|cut:zone_name%}
+{% with archive=archive|cut:"."%}
+<a href="/zonemanage/revert_archive/{{ zone_name}}/{{archive}}/">Revert Zone from this Archive</a></td>
+{% endwith %}
+{% endwith %}
+
 {% endblock body %}

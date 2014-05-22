@@ -111,10 +111,20 @@ def archive_list(request,zonename):
         return render(request, "archieve_list.htm",{ "records" : records,"zonename":zonename})
 	
 @login_required
-def load_archive(request,zonename,archive_soa):
-	arch_file=zonename+"."+archive_soa
+def load_archive(request,zonename,archive):
+	arch_file=zonename+"."+archive
 	z=get_archive(zonename,arch_file)
 	soa_fields=soa_detail(z)
         hostnames = sorted_hostnames(zonename, z.names.keys())
         zone_data=dns_records(z,hostnames)
         return render(request, "archieve_zone_data.htm", { "zone_name" : zonename,"zone_data" : zone_data,"soa_fields" : soa_fields, "archive":arch_file})
+
+@login_required
+def revert_archive(request,zonename,archive):
+	uid = request.user.username
+	arch_file=zonename+"."+archive
+	data=[arch_file]
+	data=revert(zonename,arch_file,uid)
+	A='/zonemanage/zone_detail/'+zonename
+        URL=zonename
+	return render(request, "index.htm",{"data" : data,'URL' : URL ,'A' : A  } )

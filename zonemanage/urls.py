@@ -14,5 +14,6 @@ urlpatterns = patterns('',
      url(r'^editzone/(?P<zonename>[a-zA-Z0-9.-]+)/$', 'zonemanage.views.edit_zone', name="edit_zone"),
      url(r'^reloadzone/(?P<zonename>[a-zA-Z0-9.-]+)/$', 'zonemanage.views.reload_zone', name="reload_zone"),
      url(r'^history/(?P<zonename>[a-zA-Z0-9.-]+)/$', 'zonemanage.views.archive_list', name="archive_list"),
-     url(r'^load_archive/(?P<zonename>[a-zA-Z0-9.-]+)/(?P<archive_soa>[a-zA-Z0-9.-]+)/$', 'zonemanage.views.load_archive', name="load_archive"),
+     url(r'^load_archive/(?P<zonename>[a-zA-Z0-9.-]+)/(?P<archive>[a-zA-Z0-9.-]+)/$', 'zonemanage.views.load_archive', name="load_archive"),
+     url(r'^revert_archive/(?P<zonename>[a-zA-Z0-9.-]+)/(?P<archive>[a-zA-Z0-9.-]+)/$', 'zonemanage.views.revert_archive', name="revert_archive"),
 )
