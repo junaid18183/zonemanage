@@ -22,7 +22,7 @@ def get_zone_archive_list(zonename):
 	#archive_dir is the direcory location defined in configuration
 	zone_array = [f for f in os.listdir(archive_dir) if fnmatch.fnmatch(f,zonename+".*")]
 	soa_array = [ i.split(zonename,1)[1][1:] for i in zone_array]
-	records = [ i.split("_") for i in soa_array ]
+	records = [ i.split("-") for i in soa_array ]
 	
 	return records
 #---------------------------------------------------------------------------------------------------------------
