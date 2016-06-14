@@ -15,7 +15,7 @@ CHANGE_TYPES = (CHANGE_TYPE_SAVE, CHANGE_TYPE_RELOAD, CHANGE_TYPE_REVERT)
 def get_zone_list():
 	#zonedir is the direcory location defined in configuration
 	zone_array = [f for f in os.listdir(zonedir) if len(f) > 2 and f[0] not in ('.', '_')]
-	zone_array = [f for f in os.listdir(zonedir) if fnmatch.fnmatch(f,'*.arpa') or fnmatch.fnmatch(f,'glam.*')]
+	zone_array = [f for f in os.listdir(zonedir) if fnmatch.fnmatch(f,'*.arpa') or fnmatch.fnmatch(f,'*.*')]
 	return zone_array
 #---------------------------------------------------------------------------------------------------------------
 def get_zone_archive_list(zonename):

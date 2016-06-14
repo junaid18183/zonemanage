@@ -5,13 +5,15 @@ Work in progress
 ==How to start==
  python manage.py runserver 0.0.0.0:8888
 
+#but zonemnage is suppose to work with apache wsgi so refer below section
+
 Sunc DB
 
 python manage.py syncdb
 
 ==Permission Issues==
 
-The /home/junedm/zonemanage/zonemanage/db shoule have r/w permission from apache
+The /plugins_scripts/Git_repos/zonemanage/zonemanage/db shoule have r/w permission from apache
 
 ==Dependacies==
 Requires django (>1.6.4)
@@ -24,6 +26,8 @@ python-ldap  - pip install python-ldap
 
 django-auth-ldap - https://github.com/christian-oudard/django-auth-ldap (pip install django_auth_ldap)
 
+yum install python-devel ; yum install openldap-devel
+
 easyzone(written by Chris Miles https://pypi.python.org/pypi/easyzone/1.2.2 ) ( no need to install , already added in the zonemanage code)
 django-dynamic-formset (https://code.google.com/p/django-dynamic-formset/wiki/Usage) ( No need to install already added in the zonemanage code) - This is used to add dynamic form
 bootstrap - used this for basic Template design ( https://github.com/twbs/bootstrap)
@@ -35,6 +39,8 @@ Chnage the values in zonemanage/config.py
 ==Apache WSGI setting==
 Copy the zonemanage.conf into the /etc/httpd/conf.d/zonemanage.conf
 if running in apache wsgi mode make sure /var/tmp/zonemanage_archive/ (or archive direcotry is owned by apache user)
+
+so create it 
 
 ==WARNING==
 Due to the nature of Zonemanage, your Apache user will need to have
